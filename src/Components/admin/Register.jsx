@@ -1,51 +1,120 @@
-import {MDBBtn, MDBCheckbox, MDBCol, MDBContainer, MDBIcon, MDBInput, MDBRow} from "mdb-react-ui-kit";
+// import {MDBBtn, MDBCheckbox, MDBCol, MDBContainer, MDBIcon, MDBInput, MDBRow} from "mdb-react-ui-kit"
+import {Formik, Field, Form} from "formik";
+import * as Yup from 'yup'
+import {getCalls, postCalls} from "../../API/axios.js";
+import {REGISTER} from "../../Constants/constants.js";
 
+const url = import.meta.env.VITE_BACKEND_ENV;
+
+const SignupSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .min(2, 'Too Short!')
+        .max(50, "Too Long")
+        .required('Required'),
+    email: Yup.string()
+        .email("Invalid Email")
+        .required("Required"),
+    password: Yup.string()
+        .min(6, "Too Short")
+        .required("Required"),
+    username: Yup.string()
+        .required("Required")
+});
+
+const getFormValues = async (values) => {
+    const {email, firstName, password, username} = values
+    if (email !== undefined && firstName !== undefined && password !== undefined && username !== undefined) {
+        console.log("here")
+        const registerUrl = url + REGISTER
+        const data = await postCalls(registerUrl, values);
+        await console.log(data);
+    } else {
+        console.log("here not")
+    }
+
+
+}
 const Register = () => {
     return (
-        <div>
-            <MDBContainer fluid className="p-3 my-5">
+        <>
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-3"></div>
+                    <div className="col-md-6 userForms">
+                        <div className="card" style={{background: "yellow"}}>
+                            <div className="card-body">
+                                {/*<div className="card" style="width: 18rem;">*/}
+                                <h1>Sign up</h1>
+                                <Formik initialValues={{
+                                    firstName: '',
+                                    email: '',
+                                    password: ''
+                                }} validationSchema={SignupSchema}
+                                        onSubmit={values => getFormValues(values)}>
+                                    {({errors, touched}) => (
+                                        <Form>
+                                            <div className="form-group userfields">
+                                                <label htmlFor="exampleInputEmail1">First Name</label>
 
-                <MDBRow>
+                                                <Field name="firstName"
+                                                       class="form-control " id="exampleInputEmail1"
+                                                       aria-describedby="emailHelp"
+                                                       placeholder="Enter First Name"
+                                                />
+                                                {errors.firstName && touched.firstName ? (
+                                                    <div className="errors-formik">{errors.firstName}</div>
+                                                ) : null}
+                                            </div>
+                                            <div className="form-group userfields">
+                                                <label htmlFor="exampleInputEmail1">Username</label>
 
-                    <MDBCol col='10' md='6'>
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-                             className="img-fluid" alt="Phone image"/>
-                    </MDBCol>
+                                                <Field name="username"
+                                                       class="form-control "
+                                                       aria-describedby="emailHelp"
+                                                       placeholder="Enter Username"
+                                                />
+                                                {errors.username && touched.username ? (
+                                                    <div className="errors-formik">{errors.username}</div>
+                                                ) : null}
+                                            </div>
+                                            <div className="form-group userfields">
+                                                <label htmlFor="exampleInputEmail1">Email address</label>
 
-                    <MDBCol col='4' md='6'>
+                                                <Field name="email"
+                                                       class="form-control " id="exampleInputEmail1"
+                                                       aria-describedby="emailHelp"
+                                                       placeholder="Enter Email"
+                                                />
+                                                {errors.email && touched.email ? (<div className="errors-formik">
+                                                    {errors.email}
+                                                </div>) : null}
+                                            </div>
+                                            <div className="form-group userfields">
+                                                <label htmlFor="exampleInputEmail1">Password</label>
 
-                        <MDBInput wrapperClass='mb-4' label='Name' id='formControlLg' type='text' size="lg"/>
-                        <MDBInput wrapperClass='mb-4' label='Email address' id='formControlLg' type='email' size="lg"/>
-                        <MDBInput wrapperClass='mb-4' label='Password' id='formControlLg' type='password' size="lg"/>
+                                                <Field name="password"
+                                                       type="password"
+                                                       class="form-control " id="exampleInputEmail1"
+                                                       aria-describedby="emailHelp"
+                                                       placeholder="Enter Password"
+                                                />
+                                                {errors.password && touched.password ? (<div className="errors-formik">
+                                                    {errors.password}
+                                                </div>) : null}
+                                            </div>
 
+                                            <button type="submit" className="btn btn-primary register-btn">Submit
+                                            </button>
+                                        </Form>
+                                    )}
 
-                        <div className="d-flex justify-content-between mx-4 mb-4">
-                            <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me'/>
-                            <a href="!#">Forgot password?</a>
+                                </Formik>
+                            </div>
                         </div>
-
-                        <MDBBtn className="mb-4 w-100" size="lg">Sign in</MDBBtn>
-
-                        <div className="divider d-flex align-items-center my-4">
-                            <p className="text-center fw-bold mx-3 mb-0">OR</p>
-                        </div>
-
-                        <MDBBtn className="mb-4 w-100" size="lg" style={{backgroundColor: '#3b5998'}}>
-                            <MDBIcon fab icon="facebook-f" className="mx-2"/>
-                            Continue with facebook
-                        </MDBBtn>
-
-                        <MDBBtn className="mb-4 w-100" size="lg" style={{backgroundColor: '#55acee'}}>
-                            <MDBIcon fab icon="twitter" className="mx-2"/>
-                            Continue with twitter
-                        </MDBBtn>
-
-                    </MDBCol>
-
-                </MDBRow>
-
-            </MDBContainer>
-        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     )
 
 }

@@ -7,8 +7,8 @@ import NoMatch from "../Components/NoMatch.jsx"
 const Routing = () => {
     return (
         <Routes>
-            <Route path="/login" element={<Login />}/>
-            <Route path="/register" element={<Register />}/>
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/register" element={<Register/>}/>
             <Route path="*" element={<NoMatch/>}/>
         </Routes>
     )

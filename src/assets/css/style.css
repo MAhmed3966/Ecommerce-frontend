@@ -3236,3 +3236,22 @@
   height: 1px;
   background: #eee;
 }
+.errors-formik{
+  color:red
+}
+
+
+.userForms{
+  margin-top: 100px !important;
+}
+.userfields{
+  padding: 5% !important;
+}
+
+.app-body{
+
+}
+
+.register-btn{
+  float:right;
+}

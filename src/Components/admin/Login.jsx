@@ -1,59 +1,99 @@
-import {
-    MDBContainer,
-    MDBCol,
-    MDBRow,
-    MDBBtn,
-    MDBIcon,
-    MDBInput,
-    MDBCheckbox
-}
-    from 'mdb-react-ui-kit';
+// import {MDBBtn, MDBCheckbox, MDBCol, MDBContainer, MDBIcon, MDBInput, MDBRow} from "mdb-react-ui-kit"
+import {Formik, Field, Form} from "formik";
+import * as Yup from 'yup'
+import {getCalls, postCalls} from "../../API/axios.js";
+import {LOGIN, REGISTER} from "../../Constants/constants.js";
+import {ToastContainer, toast} from 'react-toastify';
+import {useNavigate} from "react-router-dom";
+
+const url = import.meta.env.VITE_BACKEND_ENV;
+const SignupSchema = Yup.object().shape({
+    email: Yup.string()
+        .email("Invalid Email")
+        .required("Required"),
+    password: Yup.string()
+        .min(6, "Too Short")
+        .required("Required")
+});
+
 
 const Login = () => {
+    const navigate = useNavigate();
+    const getFormValues = async (values) => {
+        const {email, password} = values
+        if (email !== undefined && password !== undefined) {
+            const registerUrl = url + LOGIN
+            const data = await postCalls(registerUrl, values);
+            if (data.data.status === 200) {
+                const token = data.data.token
+                if (token) {
+                    localStorage.setItem('token', token)
+                }
+                toast("Login Successful")
+                navigate('/profile')
+            } else {
+                console.log("here login")
+                toast.error('🦄 Invalid Credentials');
+            }
+        }
 
+    }
     return (
-        <MDBContainer fluid className="p-3 my-5">
+        <>
+            <div className="container" >
+                <div className="row">
+                    <div className="col-md-3"></div>
+                    <div className="col-md-6 userForms">
+                        <div className="card" style={{background: "yellow"}}>
+                            <div className="card-body">
+                                {/*<div className="card" style="width: 18rem;">*/}
+                                <h1>Login</h1>
+                                <Formik initialValues={{
+                                    firstName: '',
+                                    email: '',
+                                    password: ''
+                                }} validationSchema={SignupSchema}
+                                        onSubmit={values => getFormValues(values)}>
+                                    {({errors, touched}) => (
+                                        <Form>
+                                            <div className="form-group userfields">
+                                                <label htmlFor="exampleInputEmail1">Email address</label>
 
-            <MDBRow>
+                                                <Field name="email"
+                                                       class="form-control " id="exampleInputEmail1"
+                                                       aria-describedby="emailHelp"
+                                                       placeholder="Enter Email"
+                                                />
+                                                {errors.email && touched.email ? (<div className="errors-formik">
+                                                    {errors.email}
+                                                </div>) : null}
+                                            </div>
+                                            <div className="form-group userfields">
+                                                <label htmlFor="exampleInputEmail1">Password</label>
 
-                <MDBCol col='10' md='6'>
-                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg"
-                         className="img-fluid" alt="Phone image"/>
-                </MDBCol>
+                                                <Field name="password"
+                                                       type="password"
+                                                       class="form-control " id="exampleInputEmail1"
+                                                       aria-describedby="emailHelp"
+                                                       placeholder="Enter Password"
+                                                />
+                                                {errors.password && touched.password ? (<div className="errors-formik">
+                                                    {errors.password}
+                                                </div>) : null}
+                                            </div>
 
-                <MDBCol col='4' md='6'>
+                                            <button type="submit" className="btn btn-primary register-btn">Submit
+                                            </button>
+                                        </Form>
+                                    )}
 
-
-                    <MDBInput wrapperClass='mb-4' label='Email address' id='formControlLg' type='email' size="lg"/>
-                    <MDBInput wrapperClass='mb-4' label='Password' id='formControlLg' type='password' size="lg"/>
-
-
-                    <div className="d-flex justify-content-between mx-4 mb-4">
-                        <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me'/>
-                        <a href="!#">Forgot password?</a>
+                                </Formik>
+                            </div>
+                        </div>
                     </div>
-
-                    <MDBBtn className="mb-4 w-100" size="lg">Sign in</MDBBtn>
-
-                    <div className="divider d-flex align-items-center my-4">
-                        <p className="text-center fw-bold mx-3 mb-0">OR</p>
-                    </div>
-
-                    <MDBBtn className="mb-4 w-100" size="lg" style={{backgroundColor: '#3b5998'}}>
-                        <MDBIcon fab icon="facebook-f" className="mx-2"/>
-                        Continue with facebook
-                    </MDBBtn>
-
-                    <MDBBtn className="mb-4 w-100" size="lg" style={{backgroundColor: '#55acee'}}>
-                        <MDBIcon fab icon="twitter" className="mx-2"/>
-                        Continue with twitter
-                    </MDBBtn>
-
-                </MDBCol>
-
-            </MDBRow>
-
-        </MDBContainer>
+                </div>
+            </div>
+        </>
     )
 
 }
